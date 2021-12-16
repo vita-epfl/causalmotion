@@ -17,7 +17,7 @@ TL;DR: incorporate causal invariance and structure into the design and training 
 * causal (modular) structure to approximate a sparse causal graph and facilitate efficient adaptation
 
 <p align="left">
-  <img src="docs/thumbnail.png" width="800">
+  <img src="docs/overview.png" width="800">
 </p>
 
 *The code will be further cleaned and structured by January 2022.*
