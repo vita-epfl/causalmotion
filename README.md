@@ -1,8 +1,9 @@
 # Causal Motion Forecasting
 
+
 This is an official implementation for the paper
 
-**[Towards Robust and Adaptive Motion Forecasting: A Causal Representation Perspective](https://arxiv.org/abs/2111.14820)**
+**Towards Robust and Adaptive Motion Forecasting: A Causal Representation Perspective**
 <br>
 <a href="https://sites.google.com/view/yuejiangliu">Yuejiang Liu</a>,
 <a href="https://www.riccardocadei.com">Riccardo Cadei</a>,
@@ -10,6 +11,9 @@ This is an official implementation for the paper
 <a href="https://www.linkedin.com/in/sherwin-bahmani-a2b5691a9">Sherwin Bahmani</a>,
 <a href="https://people.epfl.ch/alexandre.alahi/?lang=en/">Alexandre Alahi</a>
 <br>
+École Polytechnique Fédérale de Lausanne (EPFL)
+
+Links: **[`Arxiv 11/2021`](https://arxiv.org/abs/2111.14820) | [`Video (7 min)`](https://drive.google.com/file/d/1Uo0Y0eHq4vI7wOxya4mJlxbAe3U4kMx6/view)**
 
 TL;DR: incorporate causal invariance and structure into the design and training of motion forecasting models
 * causal formalism of motion forecasting with three groups of latent variables
@@ -50,6 +54,6 @@ Our code is mainly developed by [Riccardo Cadei](https://www.riccardocadei.com) 
 ### Acknowledgements
 
 Our code is built upon the public code of the following papers:
-* [Human Trajectory Prediction via Counterfactual Analysis](https://github.com/CHENGY12/CausalHTP)
-* [STGAT: Modeling Spatial-Temporal Interactions for Human Trajectory Prediction](https://github.com/huang-xx/STGAT)
-* [It Is Not the Journey but the Destination: Endpoint Conditioned Trajectory Prediction](https://github.com/HarshayuGirase/Human-Path-Prediction)
+* [Human Trajectory Prediction via Counterfactual Analysis, ICCV'21](https://github.com/CHENGY12/CausalHTP)
+* [It Is Not the Journey but the Destination: Endpoint Conditioned Trajectory Prediction, ECCV'20](https://github.com/HarshayuGirase/Human-Path-Prediction)
+* [STGAT: Modeling Spatial-Temporal Interactions for Human Trajectory Prediction, ICCV'19](https://github.com/huang-xx/STGAT)
