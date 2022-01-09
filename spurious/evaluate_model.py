@@ -246,7 +246,7 @@ def main(args):
     logging.info('Dataset type: {}'.format(args.dset_type))
 
     # quantitative
-    if args.metrics == 'accuracy':
+    if args.metrics == 'quantitative':
         ade = 0
         fde = 0
         total_traj = 0

@@ -2,6 +2,8 @@ dataset_name="eth"
 num_epochs="150-100-150"
 domain_shift="1-2-4-8-1"
 
+mkdir -p log/$dataset_name
+
 # Baseline (ERM)
 python train.py --dataset_name $dataset_name --num_epochs $num_epochs --add_confidence true --domain_shift $domain_shift
 
