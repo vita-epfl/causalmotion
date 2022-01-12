@@ -10,55 +10,9 @@ import matplotlib
 matplotlib.use('Agg')
 
 from loader import data_loader
+from parser import get_evaluation_parser
 from models import STGAT
 from utils import *
-
-parser = argparse.ArgumentParser()
-parser.add_argument("--log_dir", default="./log/", help="Directory containing logging file")
-parser.add_argument("--resume", default="STGAT_IRM_ic3.0_synthetic_bk1_ep20,20,20.pth.tar", type=str, metavar="PATH", help="path to latest checkpoint (default: none)")
-
-# dataset
-parser.add_argument("--dataset_name", default="eth", type=str)
-parser.add_argument("--delim", default="\t")
-parser.add_argument("--loader_num_workers", default=4, type=int)
-parser.add_argument("--obs_len", default=8, type=int)
-parser.add_argument("--fut_len", default=12, type=int)
-parser.add_argument("--skip", default=1, type=int)
-parser.add_argument("--n_coordinates", type=int, default=2, help="Number of coordinates")
-parser.add_argument("--dset_type", default="test", type=str)
-
-# randomness
-parser.add_argument("--seed", type=int, default=72, help="Random seed")
-parser.add_argument("--noise_dim", default=(16,), type=int_tuple)
-parser.add_argument("--noise_type", default="gaussian")
-parser.add_argument("--noise_mix_type", default="global")
-
-# architecture (STGAT)
-parser.add_argument("--batch_size", default=64, type=int)
-parser.add_argument("--traj_lstm_hidden_size", default=32, type=int)
-parser.add_argument("--heads", type=str, default="4,1", help="Heads in each layer, splitted with comma")
-parser.add_argument("--hidden-units",type=str,default="16",help="Hidden units in each hidden layer, splitted with comma")
-parser.add_argument("--graph_network_out_dims",type=int,default=32,help="dims of every node after through GAT module")
-parser.add_argument("--graph_lstm_hidden_size", default=32, type=int)
-parser.add_argument("--dropout", type=float, default=0, help="Dropout rate (1 - keep probability)")
-parser.add_argument("--alpha", type=float, default=0.2, help="Alpha for the leaky_relu")
-
-# computation
-parser.add_argument("--gpu_num", default="1", type=str)
-
-# validation
-parser.add_argument("--best_k", default=20, type=int)
-
-# spurious feature
-parser.add_argument("--add_confidence", default=False, type=bool)
-parser.add_argument("--domain_shifts", default='0', type=str, help='domain_shifts per environment: hotel,univ,zara1,zara2,eth')
-
-# method
-parser.add_argument("--counter", default=False, type=bool, help='counterfactual analysis')
-
-# evaluate
-parser.add_argument('--metrics', type=str, default='accuracy', choices=['accuracy', 'collision', 'qualitative'], help='evaluate metrics')
-
 
 def get_generator(checkpoint):
     '''
@@ -270,7 +224,7 @@ def main(args):
             visualize(args, loader, generator)
 
 if __name__ == "__main__":
-    args = parser.parse_args()
+    args = get_evaluation_parser().parse_args()
     set_logger(os.path.join(args.log_dir, args.dataset_name, args.resume[:-8]+"_"+args.dset_type+"_ds_"+str(args.domain_shifts)+".log"))
     torch.manual_seed(args.seed)
     torch.backends.cudnn.deterministic = True

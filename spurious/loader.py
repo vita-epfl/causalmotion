@@ -26,8 +26,8 @@ def data_loader(args, path):
 
     loader = DataLoader(
         dset,
-        batch_size=args.batch_size,
-        shuffle=False,
+        batch_size=args.batch_size//4 if args.batch_hetero else args.batch_size,
+        shuffle=True if args.batch_hetero else False,
         num_workers=args.loader_num_workers,
         collate_fn=seq_collate,
         pin_memory=False
