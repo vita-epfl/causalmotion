@@ -13,7 +13,7 @@ def get_training_parser():
     parser.add_argument("--lr", default=1e-3, type=float, metavar="LR", help="Initial learning rate", dest="lr")
     parser.add_argument("--counter", default=False, type=bool, help='Counterfactual/Factual Loss')
     parser.add_argument("--risk", default='erm', type=str, choices=['erm', 'irm', 'vrex'], help='Risk minimization method')
-    parser.add_argument("--unbiased", default=True, type=bool, help='Use an Unbiased Estimator for SGD')
+    parser.add_argument("--unbiased", default=False, type=bool, help='Use an Unbiased Estimator for SGD')
     parser.add_argument("--ic_weight", default=0.0, type=float, help='Invariance constraint strenght')
 
     return parser
