@@ -1,4 +1,4 @@
-# EXPERIMENT 1 (real-world data + Artificial Spurious Feature)
+# EXPERIMENT 1 (Real-world Data + Artificial Spurious Feature)
 
 gpu=0
 dataset_name="eth"
@@ -26,7 +26,7 @@ done
 
 
 
-# EXPERIMENT 2 (real-world data)
+# EXPERIMENT 2 (Real-world Data)
 
 # Set parameters
 gpu=0
