@@ -15,7 +15,7 @@ This is an official implementation for the paper
 
 Links: **[`Arxiv 11/2021`](https://arxiv.org/abs/2111.14820) | [`Video (7 min)`](https://drive.google.com/file/d/1Uo0Y0eHq4vI7wOxya4mJlxbAe3U4kMx6/view) | [`Adaptive Y-net`](https://github.com/sherwinbahmani/ynet_adaptive)**
 <br>
-Under review. Abbreviated version presented at NeurIPS DistShift Workshop, 2021.
+*Under review. Abbreviated version at NeurIPS DistShift, 2021.*
 
 TL;DR: incorporate causal invariance and structure into the design and training of motion forecasting models
 * causal formalism of motion forecasting with three groups of latent variables
@@ -25,8 +25,6 @@ TL;DR: incorporate causal invariance and structure into the design and training 
 <p align="left">
   <img src="docs/overview.png" width="800">
 </p>
-
-*The code will be further cleaned and structured by January 2022.*
 
 ### Spurious Shifts
 
