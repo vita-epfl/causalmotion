@@ -1,50 +1,50 @@
-# Towards Robust Motion Forecasting: A Causal Representation Perspective 
+## Spurious Shifts
 
+Robustness of motion forecasting models under spurious shifts
 
+### Requirements
 
-## Introduction
-
-Promote the robustness of motion representations under **spurious shifts** from a causal perspective.
-
-The code is built upon a recent paper `Human Trajectory Prediction via Counterfactual Analysis, ICCV'21`.
-
-## Requirements
 ```
 pip install --upgrade pip
-
 pip install -r requirements.txt
-
-pip3 install torch==1.9.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html
+pip3 install torch==1.9.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html 		# optional
 ```
 
 
-## Dataset
+### Training
 
-Synthetic data is currently saved in `/datasets/`.
+Train STGAT with three different methods 
+* Empirical Risk Minimization (ERM)
+* Counterfactual Analysis
+* Invariant Risk Minimization (IRM)
 
-
-## Training
-Train STGAT with Empirical Risk Minimization (ERM), Counterfactual Analysis and Invariant Risk Minimization (IRM).
 ```
-sh scripts/train.sh
+bash scripts/train.sh
 ```
 
-Pretrained models on dataset `eth` for all the methods with seed=1,10,20,50,100 are already saved in `/models/`.
+Pretrained models from all the methods on the `eth` dataset are already saved in `/models/`, with seed=1,10,20,50,100.
 
 
-## Evaluation
-Evaluate a model.
+### Evaluation
+Evaluate the trained models under various spurious shifts
 ```
-sh scripts/evaluate.sh
+bash scripts/evaluate.sh
 ```
+
 - Change the variable `model_name` expressing the model you want to evaluate
 - Change the variable `metrics` expressing the type of evaluation that you want to run:
     - `quantitative`: compute the Average Displacement Error (ADE) and Final Displacement Error (FDE)
     - `qualitative`: visualize a scene
     - `collisions`: compute the number of collisions
 
-
 Save all the quantitative results in a CSV file.
 ```
-sh scripts/extract.sh
+bash scripts/extract.sh
 ```
+
+### Basic Results
+
+Results of different methods under spurious shifts.
+
+<img src="images/ade.png" height="240"/> <img src="images/fde.png" height="240"/> 
+
