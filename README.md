@@ -1,11 +1,10 @@
 # Causal Motion Forecasting
 
-
 This is an official implementation for the paper
 
 **Towards Robust and Adaptive Motion Forecasting: A Causal Representation Perspective**
 <br>
-*Conference on Computer Vision and Pattern Recognition (CVPR), 2022.*
+*IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2022.*
 <br>
 <a href="https://sites.google.com/view/yuejiangliu">Yuejiang Liu</a>,
 <a href="https://www.riccardocadei.com">Riccardo Cadei</a>,
@@ -17,7 +16,7 @@ This is an official implementation for the paper
 
 Links: **[`Arxiv 11/2021`](https://arxiv.org/abs/2111.14820) | [`Video (7 min)`](https://drive.google.com/file/d/1Uo0Y0eHq4vI7wOxya4mJlxbAe3U4kMx6/view) | [`Adaptive Y-net`](https://github.com/sherwinbahmani/ynet_adaptive)**
 
-TL;DR: incorporate causal invariance and structure into the design and training of motion forecasting models
+TL;DR: incorporate causal *invariance* and *structure* into the design and training of forecasting models in order to improve the *robustness* and *reusability* of the learned motion representations
 * causal formalism of motion forecasting with three groups of latent variables
 * causal (invariant) representations to suppress spurious features and promote robust generalization
 * causal (modular) structure to approximate a sparse causal graph and facilitate efficient adaptation
