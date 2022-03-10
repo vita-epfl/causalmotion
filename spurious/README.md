@@ -7,9 +7,10 @@ Robustness of motion forecasting models under spurious shifts
 ```
 pip install --upgrade pip
 pip install -r requirements.txt
-pip3 install torch==1.9.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html 		# optional
+pip3 install torch==1.9.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html 		
 ```
 
+---
 
 ### Training
 
@@ -33,7 +34,7 @@ bash scripts/add_confidence/train.sh
 Pretrained models from all the methods on baseline 'ETH-UCY' dataset (environment: `eth`) already saved in `/models/eth`. \
 Pretrained models from all the methods on modified 'ETH-UCY' dataset (environment: `hotel`) already saved in `/models/hotel`.
 
-
+---
 
 ### Evaluation
 Evaluate the trained models under various spurious shifts
@@ -58,6 +59,8 @@ Save all the quantitative results in a CSV file.
 ```
 bash scripts/extract.sh
 ```
+
+---
 
 ### Basic Results
 
