@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-DATASET="hotel"
+DATASET="eth"
 FOLDERNAME=log
 
 mkdir -p results/${DATASET}
