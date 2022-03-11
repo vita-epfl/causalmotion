@@ -31,8 +31,8 @@ bash scripts/add_confidence/train.sh
 
 - Change the variable `dataset_name` expressing the environment you want to use for testing. All the other environments are used for training. 
 
-Pretrained models from all the methods on baseline 'ETH-UCY' dataset (environment: `eth`) already saved in `/models/eth`. \
-Pretrained models from all the methods on modified 'ETH-UCY' dataset (environment: `hotel`) already saved in `/models/hotel`.
+Pretrained models from all the methods on baseline 'ETH-UCY' dataset (environment: `hotel`) already saved in `/models/hotel`. \
+Pretrained models from all the methods on modified 'ETH-UCY' dataset (environment: `eth`) already saved in `/models/eth`.
 
 ---
 
