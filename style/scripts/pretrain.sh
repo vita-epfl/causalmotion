@@ -1,79 +1,43 @@
 # PRETRAIN
+
+## General parameters
 GPU=0 # 1. Set GPU
 exp='pretrain'
 
-# SSE (ERM, IRM)
-
 dataset='v4' # 2. Set dataset
 f_envs='0.1-0.3-0.5'
-#DATA="--dataset_name $dataset --filter_envs $f_envs"
-DATA="--dataset_name $dataset --filter_envs $f_envs --reduceall 9000"
-
-
-#USUAL="--contrastive 0.1 --styleinteg none" 
-USUAL="--contrastive 1" 
-
+DATA="--dataset_name $dataset --filter_envs $f_envs --reduceall 128" #9000
+DIR="--tfdir runs/$dataset/$exp/$irm"
 bs=64
-e='0-0-100-50-20-300'
+
+
+### EXPLANATION OF THE TRAINING EPOCHS STEPS
+# 1. (deprecated, was used for first step of stgat training)
+# 2. (deprecated, was used for second step of stgat training)
+# 3. inital training of the entire model, without any style input
+# 4. train style encoder using classifier, separate from pipeline
+# 5. train the integrator (that joins the style and the invariant features)
+# 6. fine-tune the integrator, decoder, style encoder with everything working
+### Epochs needs to be define as: e=N1-N2-N3-N4-N5-N6
+### EXAMPLE: if you want 20 epochs of step 3, 5 of step 4, 10 of step 5 and 10 of step 6, it will be 0-0-20-5-10-10
+
+
+## Method (uncomment the method of choice)
+
+### Vanilla
+# USUAL="--contrastive 0.1 --styleinteg none" 
+# e='0-0-100-0-0-0'
+# irm=0.0
+# TRAINING="--num_epochs $e --batch_size $bs --counter false" # 4. Set Counter
+
+### Ours
+USUAL="--contrastive 1" 
+e='0-0-5-2-2-5'  #'0-0-100-50-20-300'
 irm=1.0 # 3. Set IRM weight
 TRAINING="--num_epochs $e --batch_size $bs --irm $irm"
-#e='0-0-100-0-0-0'
-#TRAINING="--num_epochs $e --batch_size $bs --counter true" # 4. Set Counter
 
-DIR="--tfdir runs/$dataset/$exp/$irm"
-#DIR="--tfdir runs/$dataset/$exp/counter" # 5. Set counter
 
-for seed in 1 2 3 4 5
+for seed in 1 #2 3 4 5
 do  
-    CUDA_VISIBLE_DEVICES=$GPU python train.py $DATA $TRAINING $DIR $MODEL $USUAL --seed $seed &
+    CUDA_VISIBLE_DEVICES=$GPU python train.py $DATA $TRAINING $DIR $MODEL $USUAL --seed $seed
 done
-
-
-# ## Our
-
-# dataset='v2'
-# f_envs='0.1-0.3-0.5'
-# DATA="--dataset_name $dataset --filter_envs $f_envs"
-
-# USUAL="--contrastive 0.1 --styleinteg none --newstyleinteg concat --reduce 9000" 
-
-# bs=64
-# e='25-25-40-40-40-40'
-# irm=1.0 # 1. Set IRM weight
-# TRAINING="--num_epochs $e --batch_size $bs --irm $irm"
-
-# DIR="--tfdir runs/$dataset/$exp/$irm"
-
-# for seed in 1 2 3 4 5
-# do  
-#     MODEL="--resume models/v2/$exp/P3/$irm/STGAT_data_v2_irm[${irm}]_ep_(25-25-40-0-0-0)_seed_${seed}_tstep_P3_epoch_90_aggrstyle[minpol-mean]_styleinteg[none]_addloss[0]_lrinteg[0.001]_lrstgat[0.001]_contrastive[0.1]_counter[False].pth.tar"
-#     # 2. Set GPU
-#     CUDA_VISIBLE_DEVICES=$GPU python train.py $DATA $TRAINING $DIR $MODEL $USUAL --seed $seed &
-# done
-
-
-
-
-
-
-
-
-
-################
-
-# f_envs='0.1-0.3-0.5'
-# DATA="--dataset_name v2 --filter_envs $f_envs --aggrstyle minpol-mean"
-
-# bs=64
-# e='25-25-40-20-20-30'
-# irm=4
-# TRAINING="--num_epochs $e --batch_size $bs --irm $irm"
-
-# styleinteg="adain"
-# STYLE="--styleinteg $styleinteg --newstyleinteg adainnew"
-
-# MODEL="--resume 'models_trained/$styleinteg/$irm.0/model.pth.tar'"
-
-# DIR="--tfdir runs/reprodcomp"
-
-# python train.py $DATA $TRAINING $STYLE $MODEL $DIR

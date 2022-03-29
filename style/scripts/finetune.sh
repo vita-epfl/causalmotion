@@ -17,25 +17,27 @@ DATA="--dataset_name $dataset --filter_envs $filter_envs --filter_envs_pretrain 
 step='P6'
 bs=64
 p6=30
-finetune='integ' # 2. Set which module to finetune (i.e. 'all','integ+','integ')
+finetune='all' # 2. Set which module to finetune (i.e. 'all','integ+','integ')
 lrinteg=0.001
 contrastive=0.05
-epoch=470
-TRAINING="--num_epochs $epoch-0-0-0-0-$p6 --batch_size $bs --finetune $finetune --lrinteg $lrinteg --contrastive $contrastive"
-    
+epoch=14
+epoch_string='0-0-5-2-2-5'
+oldreduceall=128
 
-irm=0.0 # 3. Set IRM (used in pretraining)
-for seed in 1 2 3 4 5
+irm=1.0 # 3. Set IRM (used in pretraining)
+TRAINING="--num_epochs $epoch-0-0-0-0-$p6 --batch_size $bs --finetune $finetune --lrinteg $lrinteg --contrastive $contrastive --irm $irm"
+    
+for seed in 1 #2 3 4 5
 do
     # pretrained model
     model_dir="./models/$dataset/$exp/$step/$irm/$finetune/$seed"
-    DIR="--tfdir runs/$dataset/$exp/$step/$irm/$finetune/$seed --model_dir $model_dir"
+    DIR="--tfdir runs/$dataset/$exp/$step/$irm/$finetune/$seed"
 
-    for reduce in 64 128 192 256 320 
-    do
-        CUDA_VISIBLE_DEVICES=$GPU python train_all.py $DATA $TRAINING $MODEL $DIR --reduce $reduce --resume "models/$dataset/pretrain/$step/$irm/SSE_data_${dataset}_irm[${irm}]_filter_envs[0.1-0.3-0.5]_ep_((0, 0, 100, 50, 20, 300))_seed_${seed}_tstep_${step}_epoch_${epoch}_reduceall[9000]_relsocial[True]stylefs[all].pth.tar" &
-    done
-    CUDA_VISIBLE_DEVICES=$GPU python train_all.py $DATA $TRAINING $MODEL $DIR --reduce 384 --resume "models/$dataset/pretrain/$step/$irm/SSE_data_${dataset}_irm[${irm}]_filter_envs[0.1-0.3-0.5]_ep_((0, 0, 100, 50, 20, 300))_seed_${seed}_tstep_${step}_epoch_${epoch}_reduceall[9000]_relsocial[True]stylefs[all].pth.tar"
+    # for reduce in 64 #128 192 256 320 
+    # do
+    #     CUDA_VISIBLE_DEVICES=$GPU python train.py $DATA $TRAINING $MODEL $DIR --reduce $reduce --resume "models/$dataset/pretrain/$step/$irm/SSE_data_${dataset}_irm[${irm}]_filter_envs[0.1-0.3-0.5]_ep_[$epoch_string]_seed_${seed}_tstep_${step}_epoch_${epoch}_reduceall[9000]_relsocial[True]stylefs[all].pth.tar" &
+    # done
+    CUDA_VISIBLE_DEVICES=$GPU python train.py $DATA $TRAINING $MODEL $DIR --reduce 384 --original_seed $seed --resume "models/$dataset/pretrain/$step/$irm/SSE_data_${dataset}_irm[${irm}]_filter_envs[0.1-0.3-0.5]_ep_[$epoch_string]_seed_${seed}_tstep_${step}_epoch_${epoch}_reduceall[$oldreduceall]_relsocial[True]stylefs[all].pth.tar"
 done
 
 
