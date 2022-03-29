@@ -4,10 +4,10 @@ import os
 import torch
 import numpy as np
 
-import matplotlib.pyplot as plt
 import matplotlib
-
 matplotlib.use('Agg')
+
+import matplotlib.pyplot as plt
 
 from models import CausalMotionModel
 from parser import get_evaluation_parser
