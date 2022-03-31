@@ -441,10 +441,9 @@ def get_model_name(args, name='SSE', epoch=None, t_step=None, time=False, olde=N
     
 
     if args.finetune:
-        
         #name += f'finetune[{args.filter_envs}]'
         #name += f'reduce[{args.reduce}]'
-        name = f'model_t{args.reduce}'
+        name = f'model_t{args.reduce}' if epoch != -1 else f'model_t0'
         # name += f'_finetune{args.finetune}'
 
     return name

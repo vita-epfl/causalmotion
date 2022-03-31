@@ -138,20 +138,21 @@ def main(args):
     training_step = get_training_step(args.start_epoch)
     if args.finetune:
         with torch.no_grad():
-            validate_ade(model, train_dataset, args.start_epoch-1, training_step, writer, stage='training', args=args)
-            metric = validate_ade(model, valid_dataset, args.start_epoch-1, training_step, writer, stage='validation', args=args)
+            validate_ade(model, train_dataset, args.start_epoch-1,  'P6', writer, stage='training', args=args)
+            metric = validate_ade(model, valid_dataset, args.start_epoch-1,  'P6', writer, stage='validation', args=args)
             min_metric = metric
-            save_all_model(args, model, optimizers, metric, args.start_epoch-1, training_step)
+            if args.reduce == 64:
+                save_all_model(args, model, optimizers, metric, -1,  'P6')
+                return
             print(f'\n{"_"*150}\n')
-            train_all(args, model, optimizers, train_dataset, pretrain_dataset, args.start_epoch-1, training_step, writer, stage='training', update=False)
-            train_all(args, model, optimizers, valid_dataset, pretrain_dataset, args.start_epoch-1, training_step, writer, stage='validation')
+            train_all(args, model, optimizers, train_dataset, pretrain_dataset, args.start_epoch-1, 'P6', writer, stage='training', update=False)
+            train_all(args, model, optimizers, valid_dataset, pretrain_dataset, args.start_epoch-1,  'P6', writer, stage='validation')
     else:
             min_metric = 1e10
 
     # SOME TEST
     if args.testonly == 1:
         print('SIMPLY VALIDATE MODEL:')
-        # validate_ade(model, train_dataset, 300, 'P3', writer, 'training', write=False)
         validate_ade(model, valid_dataset, 300, 'P3', writer, 'validation', write=False)
         validate_ade(model, valid_dataset, 300, 'P6', writer, 'validation', write=False)
         validate_ade(model, valid_dataseto, 300, 'P3', writer, 'validation', write=False)

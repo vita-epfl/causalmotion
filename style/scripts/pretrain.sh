@@ -6,7 +6,7 @@ exp='pretrain'
 
 dataset='v4' # 2. Set dataset
 f_envs='0.1-0.3-0.5'
-DATA="--dataset_name $dataset --filter_envs $f_envs --reduceall 128" #9000
+DATA="--dataset_name $dataset --filter_envs $f_envs --reduceall 9000"
 DIR="--tfdir runs/$dataset/$exp/$irm"
 bs=64
 
@@ -25,19 +25,25 @@ bs=64
 ## Method (uncomment the method of choice)
 
 ### Vanilla
-# USUAL="--contrastive 0.1 --styleinteg none" 
-# e='0-0-100-0-0-0'
-# irm=0.0
-# TRAINING="--num_epochs $e --batch_size $bs --counter false" # 4. Set Counter
+e='0-0-100-0-0-0'
+irm=0.0 # 3. Set IRM weight
+TRAINING="--num_epochs $e --batch_size $bs --counter false" # 4. Set Counter
 
-### Ours
+for seed in 1 2 3 4
+do  
+    CUDA_VISIBLE_DEVICES=$GPU python train.py $DATA $TRAINING $DIR $MODEL $USUAL --seed $seed &
+done
+CUDA_VISIBLE_DEVICES=$GPU python train.py $DATA $TRAINING $DIR $MODEL $USUAL --seed 5
+
+
+### Ours with IRM
 USUAL="--contrastive 1" 
-e='0-0-5-2-2-5'  #'0-0-100-50-20-300'
+e='0-0-100-50-20-300'
 irm=1.0 # 3. Set IRM weight
 TRAINING="--num_epochs $e --batch_size $bs --irm $irm"
 
-
-for seed in 1 #2 3 4 5
+for seed in 1 2 3 4
 do  
-    CUDA_VISIBLE_DEVICES=$GPU python train.py $DATA $TRAINING $DIR $MODEL $USUAL --seed $seed
+    CUDA_VISIBLE_DEVICES=$GPU python train.py $DATA $TRAINING $DIR $MODEL $USUAL --seed $seed &
 done
+CUDA_VISIBLE_DEVICES=$GPU python train.py $DATA $TRAINING $DIR $MODEL $USUAL --seed 5
