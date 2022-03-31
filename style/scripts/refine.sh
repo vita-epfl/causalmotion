@@ -19,9 +19,9 @@ TRAINING="--irm $irm --batch_size $bs --shuffle true --seed 72 --contrastive 1"
 EPOCH='--num_epochs 0-0-100-50-20-300 --reduceall 64'
 
 ### MODEL TO LOAD (if want to start again from checkpoint)
-MOD='--resume MODEL_NAME'
+MOD='--resume /home/jonas/final/causalmotion/style/models/v4/finetune/P6/1.0/all/1/model_t384.pth.tar'
 
 ### START SCRIPT
 
-CUDA_VISIBLE_DEVICES=0 python train.py $DATA $TRAINING $DIR $EPOCH $MOD --testonly 3 --ttr 3 --ttrlr 0.001 --wrongstyle true & # refine with wrong style, ADE will increase
-CUDA_VISIBLE_DEVICES=1 python train.py $DATA $TRAINING $DIR $EPOCH $MOD --testonly 3 --ttr 3 --ttrlr 0.001 # refine with right style, ADE will decrease
+CUDA_VISIBLE_DEVICES=0 python train.py $DATA $TRAINING $DIR $EPOCH $MOD --testonly 3 --ttr 3 --ttrlr 0.001 --wrongstyle true # refine with wrong style, ADE will increase
+# CUDA_VISIBLE_DEVICES=0 python train.py $DATA $TRAINING $DIR $EPOCH $MOD --testonly 3 --ttr 3 --ttrlr 0.001 # refine with right style, ADE will decrease

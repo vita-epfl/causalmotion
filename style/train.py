@@ -121,9 +121,9 @@ def main(args):
 
     # TRAINING HAPPENS IN 6 STEPS:
     assert (len(args.num_epochs) == 6)
-    # 1. step 1 of training STGAT encoder
-    # 2. step 2 of training STGAT encoder
-    # 3. step 3 of training STGAT encoder and decoder, without any style input
+    # 1. (deprecated, was used for first step of stgat training)
+    # 2. (deprecated, was used for second step of stgat training)
+    # 3. inital training of the entire model, without any style input
     # 4. train style encoder using classifier, separate from pipeline
     # 5. train the integrator (that joins the style and the invariant features)
     # 6. fine-tune the integrator, decoder, style encoder with everything working
@@ -138,28 +138,27 @@ def main(args):
     training_step = get_training_step(args.start_epoch)
     if args.finetune:
         with torch.no_grad():
-            validate_ade(model, train_dataset, args.start_epoch-1, training_step, writer, stage='training', args=args)
-            metric = validate_ade(model, valid_dataset, args.start_epoch-1, training_step, writer, stage='validation', args=args)
+            validate_ade(model, train_dataset, args.start_epoch-1,  'P6', writer, stage='training', args=args)
+            metric = validate_ade(model, valid_dataset, args.start_epoch-1,  'P6', writer, stage='validation', args=args)
             min_metric = metric
-            save_all_model(args, model, optimizers, metric, args.start_epoch-1, training_step)
+            if args.reduce == 64:
+                save_all_model(args, model, optimizers, metric, -1,  'P6')
+                return
             print(f'\n{"_"*150}\n')
-            train_all(args, model, optimizers, train_dataset, pretrain_dataset, args.start_epoch-1, training_step, writer, stage='training', update=False)
-            train_all(args, model, optimizers, valid_dataset, pretrain_dataset, args.start_epoch-1, training_step, writer, stage='validation')
+            train_all(args, model, optimizers, train_dataset, pretrain_dataset, args.start_epoch-1, 'P6', writer, stage='training', update=False)
+            train_all(args, model, optimizers, valid_dataset, pretrain_dataset, args.start_epoch-1,  'P6', writer, stage='validation')
     else:
             min_metric = 1e10
 
     # SOME TEST
     if args.testonly == 1:
         print('SIMPLY VALIDATE MODEL:')
-        # validate_ade(model, train_dataset, 300, 'P3', writer, 'training', write=False)
         validate_ade(model, valid_dataset, 300, 'P3', writer, 'validation', write=False)
         validate_ade(model, valid_dataset, 300, 'P6', writer, 'validation', write=False)
         validate_ade(model, valid_dataseto, 300, 'P3', writer, 'validation', write=False)
         validate_ade(model, valid_dataseto, 300, 'P6', writer, 'validation', write=False)
     elif args.testonly == 2:
-        print('VALIDATE MODEL ON SEVERAL K:')
-        # validate_ade_k(model, train_dataset, 300, 'P6', writer, 'training', k=20)
-        # validate_ade_k(model, valid_dataset, 300, 'P6', writer, 'validation', k=20)
+        print('DEPRECATED')
     elif args.testonly == 3:
         print('TEST TIME MODIF:')
         validate_ade(model, valid_dataset, 500, 'P6', writer, 'training', write=False)
@@ -182,8 +181,6 @@ def main(args):
             freeze(True, (model.inv_encoder, model.style_encoder, model.decoder.mlp1, model.decoder.mlp2))
             freeze(False, (model.decoder.style_blocks,))
         elif training_step == 'P6':
-            # freeze(True, (model.inv_encoder, model.style_encoder.hat_classifier))
-            # freeze(False, (model.decoder, model.style_encoder.encoder))
             freeze(True, (model.inv_encoder,))
             freeze(False, (model.decoder, model.style_encoder))
 
@@ -191,7 +188,7 @@ def main(args):
 
         if args.contrastive and training_step == 'P4': model.style_encoder.train_er_classifier(train_dataset)
 
-        # way to decrease learning rate OPTIONAL
+        #### way to decrease learning rate OPTIONAL
         # if training_step == 'P3' and epoch >= 100 and epoch % 15 == 0 or epoch >= 250 and epoch % 15 == 0:
         #     for p in optimizers['decoder'].param_groups:
         #         p['lr'] = p['lr']/2
@@ -206,10 +203,10 @@ def main(args):
                 metric = validate_er(model, valid_dataset, epoch, writer, stage='validation')
             elif training_step in ['P3', 'P5', 'P6']:
                 metric = validate_ade(model, valid_dataset, epoch, training_step, writer, stage='validation', rp=ref_pictures, args=args)
+
+            #### EVALUATE ALSO THE TRAINING ADE and the validation loss
             # validate_ade(model, valid_dataset_o, epoch, training_step, writer, stage='validation_o')
-            
             # validate_ade(model, valid_dataseto, 300, 'P6', writer, 'validation', write=False, args=args)
-        
             # if epoch % 2 == 0:
             #     train_all(args, model, optimizers, valid_dataset, pretrain_dataset, epoch, training_step, writer, stage='validation')                
             #     if training_step == 'P4':
@@ -217,18 +214,14 @@ def main(args):
             #     else:
             #         validate_ade(model, train_dataset, epoch, training_step, writer, stage='training')
             # validate_ade(model, train_dataset, epoch, training_step, writer, stage='training', args=args)
-
         
-        # if args.finetune:
-        #     if metric < min_metric:
-        #         min_metric = metric
-        #         save_all_model(args, model, optimizers, metric, epoch, training_step)
-        #         print(f'\n{"_"*150}\n')
-    # else: 
-        # if epoch in [training_steps[ts][1] for ts in ['P1', 'P2', 'P3', 'P4', 'P5', 'P6']]:  
-        # if epoch in [training_steps[ts][1] for ts in ['P3', 'P6']]:  
-        save_all_model(args, model, optimizers, metric, epoch, training_step)
-            # print(f'\n{"_"*150}\n')
+        if args.finetune:
+            if metric < min_metric:
+                min_metric = metric
+                save_all_model(args, model, optimizers, metric, epoch, training_step)
+                print(f'\n{"_"*150}\n')
+        else:
+            save_all_model(args, model, optimizers, metric, epoch, training_step)
         
             
     writer.close()
@@ -254,7 +247,6 @@ def train_all(args, model, optimizers, train_dataset, pretrain_dataset, epoch, t
     logging.info(f"- Computing loss ({stage})")
     tbar = tqdm(range(train_dataset['num_batches']))
     for _ in tbar:
-    # for _ in range(train_dataset['num_batches']):
         
         # reset gradients
         for opt in optimizers.values(): opt.zero_grad()
@@ -325,7 +317,7 @@ def validate_ade(model, valid_dataset, epoch, training_step, writer, stage, rp=N
     repoch = epoch
     if write: writer.add_scalar(f"ade/{stage}", ade_tot_meter.avg, repoch)
 
-    # save visualizations
+    ## SAVE VISUALIZATIONS
     # if epoch % 1 == 0 and stage == 'validation':
     # if (stage == 'validation' and rp != None and epoch % 3 == 0) or force and write:
         
@@ -477,7 +469,6 @@ def compute_ade_(pred_fut_traj_rel, obs_traj, fut_traj):
     pred_fut_traj = relative_to_abs(pred_fut_traj_rel, obs_traj[-1, :, :2])
     ade_, fde_ = cal_ade_fde(fut_traj, pred_fut_traj)
     ade_ = ade_ / (fut_traj.shape[0] * obs_traj.shape[1])
-    # print('---------------------------> ADE:', ade_)
     return ade_
 
 def compute_ade_single(pred_fut_traj_rel, obs_traj, fut_traj, wto):

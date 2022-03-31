@@ -3,6 +3,7 @@
 dataset=v4
 exp='pretrain'
 
+mkdir -p results/$dataset/$exp
 echo 'step, irm, split, envs, seed, ADE, FDE' | tee results/$dataset/$exp/summary.csv
 
 for filename in log/$dataset/$exp/*.log; do
