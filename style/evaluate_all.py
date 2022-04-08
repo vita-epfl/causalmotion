@@ -23,9 +23,9 @@ def evaluate(args, loaders, model):
             for _, batch in enumerate(loader):
                 batch = [tensor.cuda() for tensor in batch]
                 (obs_traj, fut_traj, _, _, _, _, _) = batch
-                
-                if args.resume.split('/')[3]=='baseline': step='P3'
-                else: step='P6'
+
+                step = args.resume.split('/')[3]
+
                 pred_fut_traj_rel = model(batch, step)
 
                 pred_fut_traj = relative_to_abs(pred_fut_traj_rel, obs_traj[-1, :, :2])
