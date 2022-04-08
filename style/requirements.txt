@@ -9,7 +9,7 @@ grpcio
 idna
 kiwisolver
 matplotlib
-numpy==1.20
+numpy==1.21.0
 oauthlib
 Pillow
 protobuf
