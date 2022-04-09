@@ -1,4 +1,10 @@
-# Causal Motion Forecasting
+# Motion Forecasting under Distribution Shifts
+
+**[`Paper`](https://arxiv.org/abs/2111.14820) | [`Video`](https://drive.google.com/file/d/1Uo0Y0eHq4vI7wOxya4mJlxbAe3U4kMx6/view) | [`Adaptive Y-net`](https://github.com/sherwinbahmani/ynet_adaptive)**
+
+<p align="center">
+  <img src="docs/shift.png" width="480">
+</p>
 
 This is an official implementation for the paper
 
@@ -14,22 +20,28 @@ This is an official implementation for the paper
 <br>
 École Polytechnique Fédérale de Lausanne (EPFL)
 
-Links: **[`Arxiv 11/2021`](https://arxiv.org/abs/2111.14820) | [`Video (7 min)`](https://drive.google.com/file/d/1Uo0Y0eHq4vI7wOxya4mJlxbAe3U4kMx6/view) | [`Adaptive Y-net`](https://github.com/sherwinbahmani/ynet_adaptive)**
-
-TL;DR: incorporate causal *invariance* and *structure* into the design and training of forecasting models in order to improve the *robustness* and *reusability* of the learned motion representations
+TL;DR: incorporate causal *invariance* and *structure* into the design and training of forecasting models to improve the *robustness* and *reusability* of the learned motion representations under common distribution shifts
 * causal formalism of motion forecasting with three groups of latent variables
 * causal (invariant) representations to suppress spurious features and promote robust generalization
 * causal (modular) structure to approximate a sparse causal graph and facilitate efficient adaptation
 
-<p align="left">
-  <img src="docs/overview.png" width="800">
-</p>
-
 ### Spurious Shifts
+
+In the context of motion forecasting, the target trajectory is often correlated with some spurious features, such as observation noises and agent densities. Yet, such correlations are brittle and lead to poor robustness under spurious shifts. We simulate this effect in a controlled setting and demonstrate that models trained to perform equally well across training environments tend to suppress spurious features and generalize better.
+
+<p align="center">
+  <img src="docs/spurious.png" width="800">
+</p>
 
 Please check out the code in the [spurious](spurious) folder.
 
 ### Style Shifts
+
+One unique property of motion problems is that behavioral styles may naturally vary from one environment to another. To explicitly model this, we design a modular architecture that factorizes the representations of invariant features and style confounders. We train the style encoder with a contrastive loss, which allows for effective use of the structured knowledge during both training and deployment.
+
+<p align="center">
+  <img src="docs/overview.png" width="800">
+</p>
 
 Please check out the code in the [style](style) folder.
 
