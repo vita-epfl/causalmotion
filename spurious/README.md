@@ -54,7 +54,7 @@ bash scripts/add_confidence/evaluate.sh
     - (SOON AVAILABLE) `collisions`: compute the number of collisions
 
 
-Save all the quantitative results in a CSV file and plot the results (only per experiments on modified 'ETH-UCY').
+Save all the quantitative results in a CSV file, print a summary table for the experiments on the baseline dataset, and plot the performances as a function of spuriosity parameter (α) for the experiments on the modified dataset.
 ```
 bash scripts/extract.sh
 ```
