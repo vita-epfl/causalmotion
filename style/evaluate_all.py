@@ -4,10 +4,10 @@ import os
 import torch
 import numpy as np
 
-import matplotlib.pyplot as plt
 import matplotlib
-
 matplotlib.use('Agg')
+
+import matplotlib.pyplot as plt
 
 from models import CausalMotionModel
 from parser import get_evaluation_parser
@@ -23,9 +23,9 @@ def evaluate(args, loaders, model):
             for _, batch in enumerate(loader):
                 batch = [tensor.cuda() for tensor in batch]
                 (obs_traj, fut_traj, _, _, _, _, _) = batch
-                
-                if args.resume.split('/')[3]=='baseline': step='P3'
-                else: step='P6'
+
+                step = args.resume.split('/')[3]
+
                 pred_fut_traj_rel = model(batch, step)
 
                 pred_fut_traj = relative_to_abs(pred_fut_traj_rel, obs_traj[-1, :, :2])
@@ -131,8 +131,7 @@ def compute_col(predicted_traj, predicted_trajs_all, thres=0.2, num_interp=4):
 def main(args):
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_num
     generator = CausalMotionModel(args).cuda()
-    generator = CausalMotionModel(args).cuda()
-    load_model(args, generator)
+    load_all_model(args, generator, None)
     envs_path, envs_name = get_envs_path(args.dataset_name, args.dset_type, args.filter_envs)
     loaders = [data_loader(args, env_path, env_name) for env_path, env_name in zip(envs_path, envs_name)]
     logging.info('Model: {}'.format(args.resume))
@@ -161,7 +160,7 @@ def main(args):
 if __name__ == "__main__":
     args = get_evaluation_parser().parse_args()
     model_param = args.resume.split('/')
-    set_logger(os.path.join(args.log_dir, args.dataset_name,'pretrain',
-                            f'exp_{model_param[2]}_irm_{model_param[3]}_data_{args.dset_type}_{args.filter_envs}_ft_{model_param[4]}_red_{model_param[5][7:-8]}_seed_{args.seed}.log'))
+    set_logger(os.path.join(args.log_dir, args.dataset_name,'finetune' if args.finetune else 'pretrain',
+                            f'exp_{model_param[2]}_irm_{model_param[3]}_data_{args.dset_type}_{args.filter_envs}_ft_{model_param[4]}_red_{model_param[5][7:-8]}_seed_{args.seed}_reduce_{args.reduce}.log'))
     set_seed_globally(args.seed)
     main(args)

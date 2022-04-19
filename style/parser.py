@@ -4,7 +4,6 @@ from utils import int_tuple
 
 def get_evaluation_parser():
     parser = get_training_parser()
-    parser.add_argument("--resume", default="STGAT_IRM_ic3.0_synthetic_bk1_ep20,20,20.pth.tar", type=str, metavar="PATH", help="path to latest checkpoint (default: none)")
     parser.add_argument("--dset_type", default="test", type=str)
     parser.add_argument("--noise_mix_type", default="global")
     parser.add_argument('--metrics', type=str, default='accuracy', choices=['accuracy', 'collision', 'qualitative'], help='evaluate metrics')
@@ -32,6 +31,7 @@ def get_training_parser():
     parser.add_argument("--seed", type=int, default=72, help="Random seed")
     parser.add_argument("--noise_dim", default=(16,), type=int_tuple)
     parser.add_argument("--noise_type", default="gaussian")
+    parser.add_argument("--original_seed", type=int, default=1, help="Seed of original training")
     # architecture (STGAT)
     parser.add_argument("--traj_lstm_hidden_size", default=32, type=int)
     parser.add_argument("--heads", type=str, default="4,1", help="Heads in each layer, splitted with comma")
@@ -102,6 +102,9 @@ def get_training_parser():
     # method
     parser.add_argument("--irm", default=0.0, type=float, help='IRM parameter (lambda)')
     parser.add_argument("--vrex", default=0.0, type=float, help='v-REx parameter (beta)')
-    parser.add_argument("--unbiased", default=True, type=bool,
-                    help='Use (mini-batch) unbiased estimatore for IRM invariant constraint')
+
+    parser.add_argument("--complexdecoder", default=True, type=bool, help='')
+    parser.add_argument("--unbiased", default=True, type=bool, help='')
+
+
     return parser

@@ -1,6 +1,7 @@
 import os
 import logging
 import random
+from re import L
 import torch
 import numpy as np
 
@@ -62,6 +63,10 @@ def set_logger(log_path):
 
     if not logger.handlers:
         # Logging to a file
+        fold=log_path.rsplit('/', 1)[0]
+        if not os.path.exists(fold):
+            os.makedirs(fold)
+        open(log_path, "w+")
         file_handler = logging.FileHandler(log_path)
         file_handler.setFormatter(
             logging.Formatter("%(asctime)s:%(levelname)s: %(message)s")
@@ -400,7 +405,8 @@ def get_model_name(args, name='SSE', epoch=None, t_step=None, time=False, olde=N
     # to keep training if we want
     # epochs_ = '-'.join([str(i) for i in list(args.num_epochs)])
     # if olde: epochs_[-1] = olde
-    name += f'_ep_{args.num_epochs}'
+    l='-'.join(map(str, args.num_epochs))
+    name += f'_ep_[{l}]'
     name += f'_seed_{args.seed}'
     # name += f'_class_[{args.classification}]'
     if t_step: name += f'_tstep_{t_step}'
@@ -410,34 +416,35 @@ def get_model_name(args, name='SSE', epoch=None, t_step=None, time=False, olde=N
     # name += f'_aggrstyle[{args.aggrstyle}]'
     name += f'_reduceall[{args.reduceall}]'
 
-    name += f'_wrongstyle[{args.wrongstyle}]'
+    # name += f'_wrongstyle[{args.wrongstyle}]'
     # name += f'_backclassencoder[{args.backclassencoder}]'
-    name += f'_batchsize[{args.batch_size}]'
+    # name += f'_batchsize[{args.batch_size}]'
     # name += f'_styleinteg[{args.styleinteg}]'
     # name += f'_teachingratio[{args.teachingratio}]'
     # name += f'_addloss[{args.addloss}]'
-    name += f'_lrinteg[{args.lrinteg}]'
-    name += f'_lrstgat[{args.lrstgat}]'
+    # name += f'_lrinteg[{args.lrinteg}]'
+    # name += f'_lrstgat[{args.lrstgat}]'
     
-    # name += f'_relsocial[{args.relsocial}]'
+    name += f'_relsocial[{args.relsocial}]'
     # name += f'_couples[{NUMBER_COUPLES}]'
-    name += f'_contrast[{args.contrastive}]'
+    # name += f'_contrast[{args.contrastive}]'
 
     # TO ADD LATER
     # name += f'_counter[{args.counter}]'
-    name += f'_consist[{args.styleconsistency}]'
+    # name += f'_consist[{args.styleconsistency}]'
 
     # name += f'_ttr[{args.ttr}]'
     # name += f'_shuffle[{args.shuffle}]'
     # name += f'_ttrlr[{args.ttrlr}]'
+
+    name += f'stylefs[{args.stylefs}]'
     
 
     if args.finetune:
-        
         #name += f'finetune[{args.filter_envs}]'
         #name += f'reduce[{args.reduce}]'
-        name += f'model_t{args.reduce}'
-        name += f'_finetune{args.finetune}'
+        name = f'model_t{args.reduce}' if epoch != -1 else f'model_t0'
+        # name += f'_finetune{args.finetune}'
 
     return name
 
@@ -494,6 +501,8 @@ def save_all_model(args, model, optimizers, metric, epoch, training_step):
         #filefolder = f'./models/{args.dataset_name}/{phase}/{training_step}/{args.irm}/{real_style_integ}'
         filefolder = f'./models/{args.dataset_name}/{phase}/{training_step}/{args.irm}'
 
+        if args.finetune: filefolder += f'/{args.finetune}/{args.original_seed}'
+
     # Check whether the specified path exists or not
     if not os.path.exists(filefolder): os.makedirs(filefolder)  
    
@@ -513,35 +522,40 @@ def load_all_model(args, model, optimizers):
 
         # invariant encoder
         model.inv_encoder.load_state_dict(models_checkpoint['inv'])
-        optimizers['inv'].load_state_dict(checkpoint['optimizers']['inv'])
-        if args.start_epoch >= args.num_epochs[0] + args.num_epochs[1]: update_lr(optimizers['inv'], 5e-3)
+        if optimizers != None: 
+            optimizers['inv'].load_state_dict(checkpoint['optimizers']['inv'])
+            if args.start_epoch >= args.num_epochs[0] + args.num_epochs[1]: update_lr(optimizers['inv'], 5e-3)
 
         # decoder
         assert(not 'complexdecoder' in checkpoint or args.complexdecoder == checkpoint['complexdecoder'])
         model.decoder.load_state_dict(models_checkpoint['decoder'])
-        optimizers['decoder'].load_state_dict(checkpoint['optimizers']['decoder'])
-        update_lr(optimizers['decoder'], args.lrstgat)
+        if optimizers != None: 
+            optimizers['decoder'].load_state_dict(checkpoint['optimizers']['decoder'])
+            update_lr(optimizers['decoder'], args.lrstgat)
             
 
         # style encoder
         assert(not 'styleinteg' in checkpoint or args.styleinteg == checkpoint['styleinteg'])
         try:
             model.style_encoder.load_state_dict(models_checkpoint['style'])
-            optimizers['style'].load_state_dict(checkpoint['optimizers']['style'])
-            update_lr(optimizers['style'], args.lrstyle)
+            if optimizers != None: 
+                optimizers['style'].load_state_dict(checkpoint['optimizers']['style'])
+                update_lr(optimizers['style'], args.lrstyle)
         except Exception:
             print('Styleinteg was wrongly chosen')
 
 
         # integrator
         if args.newstyleinteg == '': # keep the curent style integrator
-            optimizers['integ'].load_state_dict(checkpoint['optimizers']['integ'])
-            update_lr(optimizers['integ'], args.lrinteg)
+            if optimizers != None: 
+                optimizers['integ'].load_state_dict(checkpoint['optimizers']['integ'])
+                update_lr(optimizers['integ'], args.lrinteg)
 
         else: # change the style integrator
             model.decoder.set_integrator(args.newstyleinteg)
-            optimizers['integ'] = torch.optim.Adam([ {"params": model.decoder.style_blocks.parameters(), 'lr': args.lrinteg}]    
-                    ) if args.newstyleinteg != 'none' else get_fake_optim()
+            if optimizers != None: 
+                optimizers['integ'] = torch.optim.Adam([ {"params": model.decoder.style_blocks.parameters(), 'lr': args.lrinteg}]    
+                        ) if args.newstyleinteg != 'none' else get_fake_optim()
 
             logging.info(f'=> loading a model with "{args.styleinteg}" but changed the integrator to "{args.newstyleinteg}"')
             args.styleinteg = args.newstyleinteg
