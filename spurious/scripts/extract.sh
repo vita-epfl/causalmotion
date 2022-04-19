@@ -1,5 +1,3 @@
-#! /usr/bin/env bash
-
 DATASET="eth"
 FOLDERNAME=log
 
@@ -18,3 +16,5 @@ for filename in ${FOLDERNAME}/${DATASET}/*.log; do
 	| paste -d " " - - - - -\
 	| tee -a results/${DATASET}/summary.csv
 done
+
+python visualize.py --dataset_name $DATASET
