@@ -33,7 +33,7 @@ def main(args):
         print(baseline_summary)
 
     # Modified
-    print(f'\n\nAdd Confidence: \nsee plot `images/{args.dataset_name}_ade.png` and `images/{args.dataset_name}_fde.png`')
+    print(f'\n\nModified (add_confidence): \nsee plot `images/{args.dataset_name}_ade.png` and `images/{args.dataset_name}_fde.png`')
     addconfidence = result[result['Domain Parameter (α)']!=0]
     if addconfidence.shape[0]==0:
         warnings.warn("No 'add_confidence' experiments available, Figure 5 cannot be reproduced.")
