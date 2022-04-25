@@ -211,3 +211,13 @@ def evaluate_helper(error, seq_start_end):
         _error = torch.min(_error)
         sum_ += _error
     return sum_
+
+def set_name_method(method):
+   if 'counter' in method:
+       return 'Counterfactual'
+   else:
+       if 'erm' in method:
+           return 'ERM'
+       if 'irm' in method:
+           lambda_ = method.replace('factualirm','')
+           return f'IRM (λ={lambda_})'

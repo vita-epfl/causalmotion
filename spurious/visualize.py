@@ -6,10 +6,17 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 from parser import get_training_parser
+import os
 import warnings
+
+from utils import set_name_method
 
 
 def main(args):
+    # create folder images
+    if not os.path.exists(f'images/{args.dataset_name}/'):
+        os.makedirs(f'images/{args.dataset_name}/')
+
     result = pd.read_csv(f'results/{args.dataset_name}/summary.csv', sep=', ', engine='python')
     result = result[result.split=='test']
     result['Method']=result['method']+result['risk']+result['lambda'].apply(str)
@@ -33,7 +40,7 @@ def main(args):
         print(baseline_summary)
 
     # Modified
-    print(f'\n\nModified (add_confidence): \nsee plot `images/{args.dataset_name}_ade.png` and `images/{args.dataset_name}_fde.png`')
+    print(f'\n\nModified (add_confidence): ')
     addconfidence = result[result['Domain Parameter (α)']!=0]
     if addconfidence.shape[0]==0:
         warnings.warn("No 'add_confidence' experiments available, Figure 5 cannot be reproduced.")
@@ -46,7 +53,7 @@ def main(args):
         ax.set_xscale('log')
         ax.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
         ax.set_xticks([2**i for i in range(7)])
-        plt.savefig(f'images/{args.dataset_name}_ade.png', bbox_inches='tight', pad_inches=0)
+        plt.savefig(f'images/{args.dataset_name}/ade.png', bbox_inches='tight', pad_inches=0)
 
         # Plot FDE
         f, ax = plt.subplots(figsize=(5.5, 5))
@@ -55,17 +62,8 @@ def main(args):
         ax.set_xscale('log')
         ax.xaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
         ax.set_xticks([2**i for i in range(7)])
-        plt.savefig(f'images/{args.dataset_name}_fde.png', bbox_inches='tight', pad_inches=0)
-
-def set_name_method(method):
-   if 'counter' in method:
-       return 'Counterfactual'
-   else:
-       if 'erm' in method:
-           return 'ERM'
-       if 'irm' in method:
-           lambda_ = method.replace('factualirm','')
-           return f'IRM (λ={lambda_})'
+        plt.savefig(f'images/{args.dataset_name}/fde.png', bbox_inches='tight', pad_inches=0)
+        print('see plots `images/{args.dataset_name}/ade.png` and `images/{args.dataset_name}/fde.png`')
 
 if __name__ == "__main__":
     args = get_training_parser().parse_args()
