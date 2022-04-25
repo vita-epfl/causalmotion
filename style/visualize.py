@@ -1,12 +1,76 @@
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
-import tensorflow as tf
-import io
-import numpy as np
-from torch.serialization import save
+import matplotlib
+import seaborn as sns
 
-from utils import NUMBER_PERSONS
+import tensorflow as tf
+from torch.serialization import save
+import numpy as np
+import pandas as pd
+
+import argparse
+import os
+import io
+import warnings
+
+from utils import NUMBER_PERSONS, set_name_method, set_name_env, set_name_finetune
+
+
+def main(args):
+  # create folder images
+  if not os.path.exists(f'images/{args.dataset_name}'):
+    os.makedirs(f'images/{args.dataset_name}')
+
+  # pretrain exp 
+  if args.exp=='pretrain' or args.exp=='all':
+    print(f'\nRESULTS\nDataset: {args.dataset_name}\n\nPretrain: ')
+    result = pd.read_csv(f'results/{args.dataset_name}/pretrain/summary.csv', sep=', ', engine='python')
+    result['method'] = 's_' + result['step'].astype(str) + '_i_' + result['irm'].astype(str)
+    result['method'] = result['method'].apply(set_name_method)
+    result['envs'] = result['envs'].apply(set_name_env)
+    result = result[result.split=='test']
+    result = result.drop(['seed','step','irm','split'], axis=1)
+    result = result[result.envs.astype(bool)]
+    result = pd.pivot_table(result, 
+                    values=['ADE', 'FDE'], 
+                    index=['method'],
+                    columns=['envs'],
+                    aggfunc={'ADE': [np.mean,np.std],
+                            'FDE': [np.mean,np.std]},
+                    sort=True
+                    ).round(decimals=3)                 
+    if result.shape[0]==0:
+        warnings.warn("No 'pretrain' experiments available.")
+    else: print(result)
+
+  # finetune exp
+  if args.exp=='finetune' or args.exp=='all':
+    result = pd.read_csv(f'results/{args.dataset_name}/finetune/summary.csv', sep=', ', engine='python')
+    result = result[result.split=='test']
+    result = result[result.envs==args.env]
+    result = result.drop(['step','irm','envs','seed','split'], axis=1)
+    reduce = sorted(result.reduce.unique())
+    result['finetune'] = result['finetune'].apply(set_name_finetune)
+    
+    f, ax = plt.subplots(figsize=(5.5, 5))
+    sns.despine(f)
+    sns.lineplot(data=result, x="reduce", y="ADE", hue='finetune', marker='o')
+    ax.legend_.set_title(None)
+    ax.set_xlabel('# Batches')
+    ax.set_xticks(list(reduce), list([int(elem/64) for elem in reduce]))
+    plt.savefig(f'images/{args.dataset_name}/finetune_ade.png', bbox_inches='tight', pad_inches=0)
+
+    f, ax = plt.subplots(figsize=(5.5, 5))
+    sns.despine(f)
+    sns.lineplot(data=result, x="reduce", y="FDE", hue='finetune', marker='o')
+    ax.legend_.set_title(None)
+    ax.set_xlabel('# Batches')
+    ax.set_xticks(list(reduce), list([int(elem/64) for elem in reduce]))
+    plt.savefig(f'images/{args.dataset_name}/finetune_fde.png', bbox_inches='tight', pad_inches=0)
+
+    print(f'\n\nRefinement: \nsee plot `images/{args.dataset_name}/ade.png` and `images/{args.dataset_name}/fde.png`')
+
 
 
 def plot_to_image(figure):
@@ -49,11 +113,6 @@ def draw_solo(saved_pred, wto):
               axes[k//X].plot(obs[:,NUMBER_PERSONS*seq+j,0], obs[:,NUMBER_PERSONS*seq+j,1], label='obs', color=colors[j])
               axes[k//X].plot(fut[:,NUMBER_PERSONS*seq+j,0], fut[:,NUMBER_PERSONS*seq+j,1], label='fut', color=colors[j])
               axes[k//X].plot(pred[:,NUMBER_PERSONS*seq+j,0], pred[:,NUMBER_PERSONS*seq+j,1], '--', label='pred', color=colors[j])
-
-            
-                  # axes[k%X][k//X].plot(obs[:,NUMBER_PERSONS*seq+j,0], obs[:,NUMBER_PERSONS*seq+j,1], label='obs', color=colors[j])
-                  # axes[k%X][k//X].plot(fut[:,NUMBER_PERSONS*seq+j,0], fut[:,NUMBER_PERSONS*seq+j,1], label='fut', color=colors[j])
-                  # axes[k%X][k//X].plot(pred[:,NUMBER_PERSONS*seq+j,0], pred[:,NUMBER_PERSONS*seq+j,1], '--', label='pred', color=colors[j])
 
     # convert it to numpy array
     cm_image = plot_to_image(figure)
@@ -124,18 +183,18 @@ def draw_image(saved_pred):
                   axes[i%3][i//3+2*k].plot(fut[:,NUMBER_PERSONS*seq+j,0], fut[:,NUMBER_PERSONS*seq+j,1], label='fut', color=colors[j])
                   # axes[i%3][i//3+2*k].plot(pred[:,NUMBER_PERSONS*seq+j,0], pred[:,NUMBER_PERSONS*seq+j,1], '--', label='pred', color=colors[j])
 
-
-
-    # for k, (obs, fut, pred) in enumerate(saved_pred):
-    #     for i, seq in enumerate(a[:6]):
-    #         for j in range(4):
-    #                 axes[i%3][i//3+2*k].plot(obs[:,seq+j,0], obs[:,seq+j,1], label='obs', color=colors[j])
-    #                 axes[i%3][i//3+2*k].plot(fut[:,seq+j,0], fut[:,seq+j,1], label='fut', color=colors[j])
-    #                 axes[i%3][i//3+2*k].plot(pred[:,seq+j,0], pred[:,seq+j,1], '--', label='pred', color=colors[j])
-
     # convert it to numpy array
     cm_image = plot_to_image(figure)
     array = (cm_image.numpy()[0])[:,:,:3]
     array = np.transpose(array, (2, 0, 1))
 
     return figure, array
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--exp", default='all', choices=['pretrain','finetune','all'], help="Select Experiment")
+    parser.add_argument("--dataset_name", default="v4", type=str)
+    parser.add_argument("--env", default=0.6, type=float, help="Only for Finetune exp")
+    args = parser.parse_args()
+    main(args)

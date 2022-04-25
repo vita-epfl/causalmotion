@@ -449,30 +449,23 @@ def get_model_name(args, name='SSE', epoch=None, t_step=None, time=False, olde=N
     return name
 
 
-def set_name_method(name_raw):
-    if 'counter' in name_raw:
-        return 'Counterfactual'
-    elif 'factual' in name_raw:
-        name_raw = name_raw.replace('factual', '')
-        if 'irm' in name_raw:
-            lambda_ = float(name_raw.replace('irm', ''))
-            return f'IRM (λ={lambda_})'
-        elif 'vrex' in name_raw:
-            lambda_ = float(name_raw.replace('irm', ''))
-            return f'v-REx (λ={lambda_})'
-        elif 'erm' in name_raw:
-            return 'ERM'
+def set_name_method(method):
+    if 's_3' in method: model = 'Baseline'
+    elif 's_6' in method: model = 'Modular'
+    
+    if 'i_0.0' in method: risk = 'ERM'
+    else: risk = f'IRM (λ={method[6:]})'
+    return f'{model} {risk}'
 
+def set_name_env(env):
+    if env in [0.1, 0.3, 0.5]: return 'IID'
+    elif env==0.4: return 'OoD-Inter'
+    elif env==0.6: return 'OoD-Extra'
 
-def set_name_experiment(name):
-    if 'baseline' in name:
-        return 'baseline'
-    if 'ablation' in name:
-        lambda_ = name.replace('ablation','')
-        if float(lambda_)>0:
-            return f'Ablation (IRM={lambda_})'
-        else:
-            return 'Ablation (ERM)'
+def set_name_finetune(finetune):
+    if 'integ' in finetune: return 'Update f only'
+    elif 'all' in finetune: return 'Update Ψ,f,g'
+    elif 'refinement' in finetune: return 'Update f + Refinement'
 
 
 def save_all_model(args, model, optimizers, metric, epoch, training_step):

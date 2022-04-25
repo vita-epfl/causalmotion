@@ -17,3 +17,5 @@ for filename in log/$dataset/$exp/*.log; do
 	| paste -d " " - - - - - \
 	| tee -a results/$dataset/$exp/summary.csv
 done
+
+python visualize.py --exp $exp
