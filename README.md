@@ -1,4 +1,4 @@
-# Motion Forecasting under Distribution Shifts
+# Causal Motion Representations
 
 **[`Paper`](https://arxiv.org/abs/2111.14820) | [`Video`](https://drive.google.com/file/d/1Uo0Y0eHq4vI7wOxya4mJlxbAe3U4kMx6/view) | [`Adaptive Y-net`](https://github.com/sherwinbahmani/ynet_adaptive)**
 
@@ -20,7 +20,7 @@ This is an official implementation for the paper
 <br>
 École Polytechnique Fédérale de Lausanne (EPFL)
 
-TL;DR: incorporate causal *invariance* and *structure* into the design and training of forecasting models to improve the *robustness* and *reusability* of the learned motion representations under common distribution shifts
+TL;DR: incorporate causal *invariance* and *structure* into the design and training of motion forecasting models to improve the *robustness* and *reusability* of the learned representations under common distribution shifts
 * causal formalism of motion forecasting with three groups of latent variables
 * causal (invariant) representations to suppress spurious features and promote robust generalization
 * causal (modular) structure to approximate a sparse causal graph and facilitate efficient adaptation
