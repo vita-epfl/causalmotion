@@ -45,6 +45,7 @@ def main(args):
     else: print(result)
 
   # finetune exp
+  print('\n\Finetune: ')
   if args.exp=='finetune' or args.exp=='all':
     result = pd.read_csv(f'results/{args.dataset_name}/finetune/summary.csv', sep=', ', engine='python')
     result = result[result.split=='test']
@@ -52,24 +53,27 @@ def main(args):
     result = result.drop(['step','irm','envs','seed','split'], axis=1)
     reduce = sorted(result.reduce.unique())
     result['finetune'] = result['finetune'].apply(set_name_finetune)
-    
-    f, ax = plt.subplots(figsize=(5.5, 5))
-    sns.despine(f)
-    sns.lineplot(data=result, x="reduce", y="ADE", hue='finetune', marker='o')
-    ax.legend_.set_title(None)
-    ax.set_xlabel('# Batches')
-    ax.set_xticks(list(reduce), list([int(elem/64) for elem in reduce]))
-    plt.savefig(f'images/{args.dataset_name}/finetune_ade.png', bbox_inches='tight', pad_inches=0)
 
-    f, ax = plt.subplots(figsize=(5.5, 5))
-    sns.despine(f)
-    sns.lineplot(data=result, x="reduce", y="FDE", hue='finetune', marker='o')
-    ax.legend_.set_title(None)
-    ax.set_xlabel('# Batches')
-    ax.set_xticks(list(reduce), list([int(elem/64) for elem in reduce]))
-    plt.savefig(f'images/{args.dataset_name}/finetune_fde.png', bbox_inches='tight', pad_inches=0)
+    if result.shape[0]==0:
+        warnings.warn("No 'Finetune' experiments available.")
+    else:
+        f, ax = plt.subplots(figsize=(5.5, 5))
+        sns.despine(f)
+        sns.lineplot(data=result, x="reduce", y="ADE", hue='finetune', marker='o')
+        ax.legend_.set_title(None)
+        ax.set_xlabel('# Batches')
+        ax.set_xticks(list(reduce), list([int(elem/64) for elem in reduce]))
+        plt.savefig(f'images/{args.dataset_name}/finetune_ade.png', bbox_inches='tight', pad_inches=0)
 
-    print(f'\n\nRefinement: \nsee plot `images/{args.dataset_name}/ade.png` and `images/{args.dataset_name}/fde.png`')
+        f, ax = plt.subplots(figsize=(5.5, 5))
+        sns.despine(f)
+        sns.lineplot(data=result, x="reduce", y="FDE", hue='finetune', marker='o')
+        ax.legend_.set_title(None)
+        ax.set_xlabel('# Batches')
+        ax.set_xticks(list(reduce), list([int(elem/64) for elem in reduce]))
+        plt.savefig(f'images/{args.dataset_name}/finetune_fde.png', bbox_inches='tight', pad_inches=0)
+
+        print(f'see plots `images/{args.dataset_name}/finetune_ade.png` and `images/{args.dataset_name}/finetune_fde.png`')
 
 
 

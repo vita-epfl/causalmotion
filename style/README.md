@@ -35,7 +35,7 @@ Evaluate pretrained models on different domains, including both in-distribution 
 ```
 bash scripts/evaluate_generalization.sh
 ```
-Save all the quantitative results in `results/{dataset_name}/pretrain/summary.csv`.
+Save all the quantitative results in `results/{dataset_name}/pretrain/summary.csv` and print a summary table.
 ```
 bash scripts/extract_generalization.sh
 ```
@@ -56,7 +56,7 @@ Evaluate finetuned model.
 bash scripts/evaluate_adaptation.sh
 ```
 
-Save all the quantitative results in `results/{dataset_name}/finetune/summary.csv`.
+Save all the quantitative results in `results/{dataset_name}/finetune/summary.csv` and plot the performances (i.e. ADE, FDE) as a function of number of batches at test time.
 ```
 bash scripts/extract_adaptation.sh
 ```
