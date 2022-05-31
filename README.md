@@ -1,6 +1,6 @@
 # Causal Motion Representations
 
-**[`Paper`](https://arxiv.org/abs/2111.14820) | [`Video`](https://drive.google.com/file/d/1Uo0Y0eHq4vI7wOxya4mJlxbAe3U4kMx6/view) | [`Adaptive Y-net`](https://github.com/sherwinbahmani/ynet_adaptive)**
+**[`Paper`](https://arxiv.org/abs/2111.14820) | [`Video`](https://youtu.be/mqx988tyhfc) | [`Adaptive Y-net`](https://github.com/sherwinbahmani/ynet_adaptive)**
 
 <p align="center">
   <img src="docs/shift.png" width="480">
