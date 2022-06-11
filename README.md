@@ -47,14 +47,14 @@ Please check out the code in the [style](style) folder.
 
 ### Citation
 
-If you find this code useful for your research, please cite our paper:
-
 ```bibtex
-@article{liu2021causalmotion,
-  title={Towards Robust and Adaptive Motion Forecasting: A Causal Representation Perspective},
-  author={Liu, Yuejiang and Cadei, Riccardo and Schweizer, Jonas and Bahmani, Sherwin and Alahi, Alexandre},
-  journal={arXiv preprint arXiv:2111.14820},
-  year={2021}
+@InProceedings{Liu2022CausalMotionRepresentations,
+    title     = {Towards Robust and Adaptive Motion Forecasting: A Causal Representation Perspective},
+    author    = {Liu, Yuejiang and Cadei, Riccardo and Schweizer, Jonas and Bahmani, Sherwin and Alahi, Alexandre},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2022},
+    pages     = {17081-17092}
 }
 ```
 
